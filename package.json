@@ -14,10 +14,10 @@
         "test": "jest",
         "docs": "npx typedoc"
     },
-    "author": "Erik Viveros forked from Cairo G. Resendiz",
+    "author": "TheMrP forked from Erik Viveros forked from Cairo G. Resendiz",
     "license": "ISC",
     "dependencies": {
-        "aws-sdk": "^2.973.0",
+        "aws-sdk": "^2.1359.0",
         "bluebird": "^3.7.2",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",

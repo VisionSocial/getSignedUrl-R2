@@ -4,25 +4,16 @@ The purpose of this email service is to have a service for creating signed url t
 
 ### Installation
 
-First, you need to clone this repo
-
+First, create your .env and edit as you need
 ```
-git clone https://github.com/erikfer94/getSignedUrl-DO.git <folder>
+cp .env.dummy .env
 ```
-
-Once this repo is cloned, enter to the new folder and make a copy of `.env.dummy` called `.env`
-```
-cp .env.test .env
-```
-
-Set your own environment values on this env file.
-
 
 ### Initialize
 
 Run this command
 ```
-npm install
+npm install && npm update
 ```
 
 ### Running
