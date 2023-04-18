@@ -12,7 +12,7 @@ import {
 } from "../../interfaces/IAmazon";
 import Amazon from "../../classes/amazon";
 import BaseController from "../BaseController";
-import { bucketDefault } from "../../config/config";
+import { default_bucket } from "../../config/config";
 import Bluebird from "bluebird";
 
 export default class FileController
@@ -27,8 +27,11 @@ export default class FileController
     super();
     this.mimetype = mimetype;
     this.fileData = fileData;
-    this.aws = new Amazon(fileData.bucket || bucketDefault, {
-      signatureVersion: "v4",
+    this.aws = new Amazon(fileData.bucket || default_bucket, {
+      endpoint: `https://${accountid}.r2.cloudflarestorage.com`,
+  accessKeyId: `${access_key_id}`,
+  secretAccessKey: `${access_key_secret}`,
+  signatureVersion: 'v4',
     });
   }
 

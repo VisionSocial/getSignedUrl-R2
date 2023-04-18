@@ -1,7 +1,9 @@
 {
-    "name": "do-signed-url",
+    "name": "r2-signed-url",
     "version": "1.0.0",
-    "description": "get signed url to upload temp files on aws spaces",
+    "description": "get signed url to upload temp files on aws s3",
+    "private": true,
+    "license": "private",
     "main": "index.js",
     "scripts": {
         "dev": "ts-node-dev --files --respawn --pretty --debug --transpile-only src/index.ts",
@@ -15,9 +17,9 @@
         "docs": "npx typedoc"
     },
     "author": "TheMrP forked from Erik Viveros forked from Cairo G. Resendiz",
-    "license": "ISC",
     "dependencies": {
-        "aws-sdk": "^2.1359.0",
+        "@aws-sdk/client-s3": "^3.315.0",
+        "@aws-sdk/s3-request-presigner": "^3.315.0",
         "bluebird": "^3.7.2",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
@@ -83,6 +85,5 @@
             "\\.(css|less)$": "<rootDir>/__mocks__/mocks.js"
         },
         "testEnvironment": "node"
-    },
-    "private": true
+    }
 }
