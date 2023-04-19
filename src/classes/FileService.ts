@@ -7,7 +7,6 @@ export default class FileService {
 
   constructor() {
     this.s3 = S3Facade.getInstance();
-    this.mimetype = "text";
   }
 
   async getSignedURL(signedData: presignerDataObject) {
@@ -16,7 +15,9 @@ export default class FileService {
 
   async list() {}
   async metadata() {}
-  async delete() {}
+  async delete() {
+    return await this.s3.deleteObject(data: objectCommandDataInput)
+  }
   async copy() {}
   async bulkMetadata() {}
   async bulkDelete() {}

@@ -1,15 +1,7 @@
 export interface IS3Facade {
   bucket: string | undefined;
   preSignURL: presignerFn;
-}
-
-export interface IS3Params {
-  Bucket: string;
-  Expires?: number;
-  ACL?: string;
-  Key: string;
-  ContentType?: string;
-  CopySource?: string;
+  deleteObject: 
 }
 
 export interface IS3Response {
@@ -32,4 +24,22 @@ export type presignerDataObject = {
   expiresIn?: number;
 };
 
-export type presignerFn = (preSignerData: presignerDataObject) => Promise<any>;
+export type presignerFnResult = {
+  error: any;
+  url: string;
+  expires: Date;
+};
+
+export type deleteObjectFnResult = {
+  error: any;
+  deleted: boolean;
+};
+
+export type presignerFn = (preSignerData: presignerDataObject) => Promise<presignerFnResult>;
+export type deleteObjectFn = (preSignerData: presignerDataObject) => Promise<deleteObjectFnResult>;
+
+export type objectCommandDataInput = {
+  filename: string;
+  path?: string;
+  bucket?: string;
+}

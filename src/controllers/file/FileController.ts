@@ -14,7 +14,7 @@ export default class FileController extends BaseController {
     this.file = new FileService();
   }
 
-  public signed = async () => {
+  public async signed() {
     const signedUrl: any = await this.file.getSignedURL({
       filename: this.fileData.filename,
       path: this.fileData.folder,
@@ -37,5 +37,28 @@ export default class FileController extends BaseController {
         500
       );
     }
-  };
+  }
+
+  public async delete() {
+    const deleted: any = await this.file.delete({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!deleted.error) {
+      return this.makeResponse(
+        {
+          deleted: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: deleted.error || "",
+        },
+        500
+      );
+    }
+  }
 }

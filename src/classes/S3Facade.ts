@@ -12,13 +12,17 @@ import {
   GetObjectCommand,
   PutObjectCommand,
   GetObjectCommandInput,
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   IS3Facade,
+  objectCommandDataInput,
   presignerDataObject,
-  signOperations,
+  presignerFnResult,
 } from "../interfaces/IS3Facade";
+import * as Path from "path";
 
 export default class S3Facade implements IS3Facade {
   bucket: string | undefined;
@@ -47,25 +51,26 @@ export default class S3Facade implements IS3Facade {
   }
 
   async preSignURL(data: presignerDataObject) {
+    const {
+      filename,
+      operation,
+      bucket = this.bucket,
+      path = "",
+      expiresIn = 3600,
+    } = data;
+
+    const result: presignerFnResult = {
+      error: null,
+      url: "",
+      expires: new Date(Date.now() + expiresIn * 1000),
+    };
+
+    const objectCommand: GetObjectCommandInput = {
+      Bucket: bucket,
+      Key: Path.join(path, filename),
+    };
+
     try {
-      const {
-        filename,
-        operation,
-        bucket = this.bucket,
-        path = "",
-        expiresIn = 3600,
-      } = data;
-      const result = {
-        error: null,
-        url: "",
-        expires: new Date(Date.now() + expiresIn * 1000),
-      };
-
-      const objectCommand: GetObjectCommandInput = {
-        Bucket: bucket,
-        Key: path + "/" + filename,
-      };
-
       if (operation === "READ") {
         result.url = await getSignedUrl(
           this._s3,
@@ -81,11 +86,39 @@ export default class S3Facade implements IS3Facade {
           { expiresIn }
         );
       }
-
-      return result;
     } catch (e) {
       console.log(e);
-      return { error: e, url: "" };
+      result.error = e;
     }
+
+    return result;
+  }
+
+  async copyObject() {}
+  async listObject() {}
+
+  async deleteObject(data: objectCommandDataInput) {
+    const { filename, path = "", bucket = this.bucket } = data;
+
+    const result = {
+      error: null,
+      deleted: false,
+    };
+
+    try {
+      
+    } catch (error) {
+      
+    }
+    const objectCommand: DeleteObjectCommandInput = {
+      Bucket: bucket,
+      Key: Path.join(path, filename),
+    };
+
+    const res = await this._s3.send(new DeleteObjectCommand(objectCommand));
+    result.deleted = !!res;
+    console.log(res);
+
+    return result;
   }
 }
