@@ -44,9 +44,6 @@ fileRouter.get(
     };
     if (bucket) fileData.bucket = bucket;
 
-    console.log('here');
-    console.log(fileData);
-    
     const fileObject = new FileController(fileData, mimetype);
     const signedUrl: ControllerResponse = await fileObject.signed();
     return res.json(signedUrl.body).status(signedUrl.status);

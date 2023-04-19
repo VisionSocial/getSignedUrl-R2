@@ -4,11 +4,11 @@ import cors from "cors";
 import routes from "./routes";
 import helmet from "helmet";
 import { ExpressJoiError } from "express-joi-validation";
-import { port } from "./config/config";
+import { PORT } from "./config/config";
 
 dotenv.config();
 
-if (!port) {
+if (!PORT) {
   process.exit(1);
 }
 
@@ -65,8 +65,8 @@ app.use(
   }
 );
 
-export const server = app.listen(port, function () {
-  console.log(`app listening in port ${port}!`);
+export const server = app.listen(PORT, function () {
+  console.log(`app listening in port ${PORT}!`);
 });
 
 export default app;

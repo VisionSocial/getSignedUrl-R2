@@ -1,5 +1,5 @@
 import {ControllerResponse} from '../controllers/BaseController'
-import {IAmazonClass} from './IAmazon'
+import { IS3Facade } from './IS3Facade'
 
 export type emptyPromiseResponse = () => Promise<ControllerResponse>
 export type stringPromiseResponse = (s: string) => Promise<ControllerResponse>
@@ -7,7 +7,6 @@ export type stringPromiseResponse = (s: string) => Promise<ControllerResponse>
 export interface IFileClass {
 	mimetype: string,
 	fileData: IFileData,
-	aws: IAmazonClass,
 	signed: emptyPromiseResponse
 	delete: emptyPromiseResponse
 	copy: stringPromiseResponse

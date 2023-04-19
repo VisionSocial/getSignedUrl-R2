@@ -1,58 +1,91 @@
 import {
-  access_key,
-  secret_key,
-  account_id,
-  default_bucket,
-} from "src/config/config";
+  ACCESS_KEY,
+  SECRET_KEY,
+  ACCOUNT_ID,
+  DEFAULT_BUCKET,
+  REGION,
+} from "../config/config";
 import {
   S3Client,
   ListBucketsCommand,
-  ListObjectsV2Command,
+  ListObjectsCommand,
   GetObjectCommand,
   PutObjectCommand,
+  GetObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { IS3Facade, IS3Response } from "src/interfaces/IS3Facade";
-import { IFileData } from "src/interfaces/IFile";
+import {
+  IS3Facade,
+  presignerDataObject,
+  signOperations,
+} from "../interfaces/IS3Facade";
 
 export default class S3Facade implements IS3Facade {
   bucket: string | undefined;
   private _s3: S3Client;
+  private static _instance: S3Facade;
 
-  constructor() {
+  private constructor() {
     this._s3 = new S3Client({
-      region: "auto",
-      endpoint: `https://${account_id}.r2.cloudflarestorage.com`,
+      region: REGION,
+      endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: access_key,
-        secretAccessKey: secret_key,
+        accessKeyId: ACCESS_KEY,
+        secretAccessKey: SECRET_KEY,
       },
     });
-    this.bucket = default_bucket;
+    this.bucket = DEFAULT_BUCKET;
   }
 
-  async preSignURL(mimetype: string, fileData: IFileData) {
+  // Singleton
+  public static getInstance(): S3Facade {
+    if (!S3Facade._instance) {
+      S3Facade._instance = new S3Facade();
+    }
+
+    return S3Facade._instance;
+  }
+
+  async preSignURL(data: presignerDataObject) {
     try {
-      // Use the expiresIn property to determine how long the presigned link is valid.
-      console.log(
-        await getSignedUrl(
-          this._s3,
-          new GetObjectCommand({ Bucket: this.bucket, Key: "dog.png" }),
-          { expiresIn: 3600 }
-        )
-      );
-      // https://my-bucket-name.<accountid>.r2.cloudflarestorage.com/dog.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential<credential>&X-Amz-Date=<timestamp>&X-Amz-Expires=3600&X-Amz-Signature=<signature>&X-Amz-SignedHeaders=host&x-id=GetObject
+      const {
+        filename,
+        operation,
+        bucket = this.bucket,
+        path = "",
+        expiresIn = 3600,
+      } = data;
+      const result = {
+        error: null,
+        url: "",
+        expires: new Date(Date.now() + expiresIn * 1000),
+      };
 
-      // You can also create links for operations such as putObject to allow temporary write access to a specific key.
-      console.log(
-        await getSignedUrl(
-          this._s3,
-          new PutObjectCommand({ Bucket: this.bucket, Key: "dog.png" }),
-          { expiresIn: 3600 }
-        )
-      );
-    } catch (e) {}
+      const objectCommand: GetObjectCommandInput = {
+        Bucket: bucket,
+        Key: path + "/" + filename,
+      };
 
-    return {};
+      if (operation === "READ") {
+        result.url = await getSignedUrl(
+          this._s3,
+          new GetObjectCommand(objectCommand),
+          { expiresIn }
+        );
+      }
+
+      if (operation === "WRITE") {
+        result.url = await getSignedUrl(
+          this._s3,
+          new PutObjectCommand(objectCommand),
+          { expiresIn }
+        );
+      }
+
+      return result;
+    } catch (e) {
+      console.log(e);
+      return { error: e, url: "" };
+    }
   }
 }

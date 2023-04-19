@@ -1,50 +1,31 @@
-import { S3 } from "aws-sdk";
-import {
-  IFileClass,
-  emptyPromiseResponse,
-  stringPromiseResponse,
-  IFileData,
-} from "../../interfaces/IFile";
-import {
-  IS3Response,
-  IAmazonClass,
-  IS3KeyObject,
-} from "../../interfaces/IAmazon";
-import Amazon from "../../classes/amazon";
 import BaseController from "../BaseController";
-import { default_bucket } from "../../config/config";
-import Bluebird from "bluebird";
+import { IFileClass, IFileData } from "../../interfaces/IFile";
+import FileService from "../../classes/FileService";
 
-export default class FileController
-  extends BaseController
-  implements IFileClass
-{
-  mimetype: string;
+export default class FileController extends BaseController {
   fileData: IFileData;
-  aws: IAmazonClass;
+  file: any;
+  mimetype: string = "text/plain";
 
   constructor(fileData: IFileData, mimetype: string = "text/plain") {
     super();
     this.mimetype = mimetype;
     this.fileData = fileData;
-    this.aws = new Amazon(fileData.bucket || default_bucket, {
-      endpoint: `https://${accountid}.r2.cloudflarestorage.com`,
-  accessKeyId: `${access_key_id}`,
-  secretAccessKey: `${access_key_secret}`,
-  signatureVersion: 'v4',
-    });
+    this.file = new FileService();
   }
 
-  public signed: emptyPromiseResponse = async () => {
-    const signedUrl: IS3Response = await this.aws.getUrl(
-      this.mimetype,
-      this.fileData
-    );
-    if (signedUrl.status) {
+  public signed = async () => {
+    const signedUrl: any = await this.file.getSignedURL({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      operation: "WRITE",
+      bucket: this.fileData.bucket,
+    });
+    if (!signedUrl.error) {
       return this.makeResponse(
         {
           url: signedUrl.url || "",
-          name: signedUrl.nameFile || "",
+          expires: signedUrl.expires || "",
         },
         200
       );
@@ -52,104 +33,6 @@ export default class FileController
       return this.makeResponse(
         {
           error: signedUrl.error || "",
-        },
-        500
-      );
-    }
-  };
-
-  public delete: emptyPromiseResponse = async () => {
-    const deletedFile: IS3Response = await this.aws.deleteFile(this.fileData);
-    if (deletedFile.status) {
-      return this.makeResponse(
-        {
-          name: deletedFile.nameFile || "",
-        },
-        200
-      );
-    } else {
-      return this.makeResponse(
-        {
-          error: deletedFile.error || "",
-        },
-        500
-      );
-    }
-  };
-
-  public copy: stringPromiseResponse = async (from: string) => {
-    const copiedfile: IS3Response = await this.aws.copyObject(
-      from,
-      this.fileData
-    );
-    if (copiedfile.status) {
-      return this.makeResponse(
-        {
-          name: copiedfile.nameFile || "",
-        },
-        200
-      );
-    } else {
-      return this.makeResponse(
-        {
-          error: copiedfile.error || "",
-        },
-        500
-      );
-    }
-  };
-
-  public list: emptyPromiseResponse = async () => {
-    const listedFiles: IS3Response = await this.aws.listObjects(this.fileData);
-    if (listedFiles.status) {
-      return this.makeResponse(
-        {
-          files: listedFiles.content || [],
-        },
-        200
-      );
-    } else {
-      return this.makeResponse(
-        {
-          error: listedFiles.error || "",
-        },
-        500
-      );
-    }
-  };
-
-  public deleteAll: emptyPromiseResponse = async () => {
-    const listedFiles: IS3Response = await this.aws.listObjects(this.fileData);
-    if (listedFiles.status) {
-      const files: S3.ObjectList = listedFiles.content || [];
-      const filesToDelete: Array<IS3KeyObject> = await Bluebird.map(
-        files,
-        (el) => {
-          return { Key: el.Key || "" };
-        }
-      );
-      const deletedFiles: IS3Response = await this.aws.deleteObjects(
-        filesToDelete
-      );
-
-      if (deletedFiles.status) {
-        return this.makeResponse(
-          {
-            files: deletedFiles.deleted || [],
-          },
-          200
-        );
-      }
-      return this.makeResponse(
-        {
-          error: deletedFiles.error || "",
-        },
-        500
-      );
-    } else {
-      return this.makeResponse(
-        {
-          error: listedFiles.error || "",
         },
         500
       );
