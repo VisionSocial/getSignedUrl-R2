@@ -1,21 +1,22 @@
 import BaseController from "../BaseController";
-import { IFileClass, IFileData } from "../../interfaces/IFile";
-import FileService from "../../classes/FileService";
+import { IFileData } from "../../interfaces/IFile";
+import S3Facade from "../../classes/S3Facade";
+import { IS3Facade } from "src/interfaces/IS3Facade";
 
 export default class FileController extends BaseController {
   fileData: IFileData;
-  file: any;
   mimetype: string = "text/plain";
+  private S3: IS3Facade;
 
   constructor(fileData: IFileData, mimetype: string = "text/plain") {
     super();
     this.mimetype = mimetype;
     this.fileData = fileData;
-    this.file = new FileService();
+    this.S3 = S3Facade.getInstance();
   }
 
   public async signed() {
-    const signedUrl: any = await this.file.getSignedURL({
+    const signedUrl: any = await this.S3.preSignURL({
       filename: this.fileData.filename,
       path: this.fileData.folder,
       operation: "WRITE",
@@ -40,7 +41,7 @@ export default class FileController extends BaseController {
   }
 
   public async delete() {
-    const deleted: any = await this.file.delete({
+    const deleted: any = await this.S3.deleteObject({
       filename: this.fileData.filename,
       path: this.fileData.folder,
       bucket: this.fileData.bucket,

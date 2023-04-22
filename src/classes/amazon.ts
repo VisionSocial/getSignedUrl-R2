@@ -37,8 +37,6 @@ export default class Amazon implements IAmazonClass {
         Key: `${fileData.folder}/${fileData.filename}`,
         ContentType: mimetype,
       };
-	  console.log(s3Params);
-	  
       response = await Promise.resolve<IS3Response>(
         new Bluebird((resolve, reject) => {
           return this.s3.getSignedUrl("putObject", s3Params, (err, url) => {

@@ -1,7 +1,7 @@
 export interface IS3Facade {
   bucket: string | undefined;
   preSignURL: presignerFn;
-  deleteObject: 
+  deleteObject: deleteObjectFn;
 }
 
 export interface IS3Response {
@@ -13,9 +13,15 @@ export interface IS3Response {
   deleted?: any;
 }
 
+export type fileParams = {
+  filename: string;
+  path?: string;
+  bucket?: string;
+};
+
 export type signOperations = "READ" | "WRITE";
 
-export type presignerDataObject = {
+export type presignerFnParams = {
   filename: string;
   operation: signOperations;
   mimetype?: string;
@@ -30,16 +36,15 @@ export type presignerFnResult = {
   expires: Date;
 };
 
+export type presignerFn = (
+  preSignerData: presignerFnParams
+) => Promise<presignerFnResult>;
+
 export type deleteObjectFnResult = {
   error: any;
   deleted: boolean;
 };
 
-export type presignerFn = (preSignerData: presignerDataObject) => Promise<presignerFnResult>;
-export type deleteObjectFn = (preSignerData: presignerDataObject) => Promise<deleteObjectFnResult>;
-
-export type objectCommandDataInput = {
-  filename: string;
-  path?: string;
-  bucket?: string;
-}
+export type deleteObjectFn = (
+  preSignerData: fileParams
+) => Promise<deleteObjectFnResult>;

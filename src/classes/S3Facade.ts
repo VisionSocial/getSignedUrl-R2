@@ -1,9 +1,9 @@
 import {
   ACCESS_KEY,
   SECRET_KEY,
-  ACCOUNT_ID,
   DEFAULT_BUCKET,
   REGION,
+  ENDPOINT,
 } from "../config/config";
 import {
   S3Client,
@@ -14,12 +14,14 @@ import {
   GetObjectCommandInput,
   DeleteObjectCommand,
   DeleteObjectCommandInput,
+  CopyObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   IS3Facade,
-  objectCommandDataInput,
-  presignerDataObject,
+  deleteObjectFnResult,
+  fileParams,
+  presignerFnParams,
   presignerFnResult,
 } from "../interfaces/IS3Facade";
 import * as Path from "path";
@@ -32,12 +34,13 @@ export default class S3Facade implements IS3Facade {
   private constructor() {
     this._s3 = new S3Client({
       region: REGION,
-      endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      endpoint: ENDPOINT,
       credentials: {
         accessKeyId: ACCESS_KEY,
         secretAccessKey: SECRET_KEY,
       },
     });
+
     this.bucket = DEFAULT_BUCKET;
   }
 
@@ -50,7 +53,7 @@ export default class S3Facade implements IS3Facade {
     return S3Facade._instance;
   }
 
-  async preSignURL(data: presignerDataObject) {
+  async preSignURL(data: presignerFnParams) {
     const {
       filename,
       operation,
@@ -94,30 +97,40 @@ export default class S3Facade implements IS3Facade {
     return result;
   }
 
-  async copyObject() {}
-  async listObject() {}
-
-  async deleteObject(data: objectCommandDataInput) {
+  async copyObject(data: fileParams) {
     const { filename, path = "", bucket = this.bucket } = data;
-
-    const result = {
+    const result: deleteObjectFnResult = {
       error: null,
       deleted: false,
     };
 
-    try {
-      
-    } catch (error) {
-      
-    }
+    const objectCommand: CopyObjectCommandInput = {
+      Bucket: bucket,
+      Key: Path.join(path, filename),
+    };
+
+  }
+  async listObject() {}
+
+  async deleteObject(data: fileParams) {
+    const { filename, path = "", bucket = this.bucket } = data;
+
+    const result: deleteObjectFnResult = {
+      error: null,
+      deleted: false,
+    };
+
     const objectCommand: DeleteObjectCommandInput = {
       Bucket: bucket,
       Key: Path.join(path, filename),
     };
 
-    const res = await this._s3.send(new DeleteObjectCommand(objectCommand));
-    result.deleted = !!res;
-    console.log(res);
+    try {
+      const res = await this._s3.send(new DeleteObjectCommand(objectCommand));
+      result.deleted = res.$metadata.httpStatusCode === 204;
+    } catch (e) {
+      Response.error = e;
+    }
 
     return result;
   }

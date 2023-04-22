@@ -11,6 +11,7 @@ export const APP_IN_PRODUCTION: boolean = ENVIROMENT === "production";
 export const PORT: number = parseInt(process.env.PORT as string, 10);
 
 export const ACCOUNT_ID: string = process.env.ACCOUNT_ID || "";
+export const ENDPOINT: string = process.env.ENDPOINT || "";
 export const ACCESS_KEY: string = process.env.ACCESS_KEY_ID || "";
 export const SECRET_KEY: string = process.env.SECRET_ACCESS_KEY || "";
 export const REGION: string = process.env.REGION || "us-east-1";
