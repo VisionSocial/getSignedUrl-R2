@@ -7,7 +7,6 @@ import {
 } from "../config/config";
 import {
   S3Client,
-  ListBucketsCommand,
   ListObjectsCommand,
   GetObjectCommand,
   PutObjectCommand,
@@ -138,7 +137,8 @@ export default class S3Facade implements IS3Facade {
     };
 
     const objectCommand: ListObjectsCommandInput = {
-      Bucket: Path.join(bucket, path),
+      Bucket: bucket,
+      Prefix: Path.join(path, '/'),
     };
 
     try {

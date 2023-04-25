@@ -50,7 +50,7 @@ export default class FileController extends BaseController {
     if (!copy.error) {
       return this.makeResponse(
         {
-          copy: true,
+          copied: true,
         },
         200
       );
@@ -78,10 +78,7 @@ export default class FileController extends BaseController {
       bucket: this.fileData.bucket,
     });
     if (!list.error) {
-      return this.makeResponse(
-        list,
-        200
-      );
+      return this.makeResponse(list, 200);
     } else {
       return this.makeResponse(
         {
@@ -93,6 +90,34 @@ export default class FileController extends BaseController {
   }
 
   public async delete() {
+    const deleted: any = await this.S3.deleteObject({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!deleted.error) {
+      return this.makeResponse(
+        {
+          deleted: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: deleted.error || "",
+        },
+        500
+      );
+    }
+  }
+
+  /**
+   * Missing implementation
+   * https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/deleteobjectscommand.html
+   * @returns
+   */
+  public async deleteAll() {
     const deleted: any = await this.S3.deleteObject({
       filename: this.fileData.filename,
       path: this.fileData.folder,

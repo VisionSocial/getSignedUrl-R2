@@ -1,6 +1,17 @@
 # S3 Signed Url Service
 
-The purpose of this email service is to have a service for creating signed url to Amazon S3 service
+The purpose of this service is to have an interface for creating signed url to Amazon S3
+
+R2 Docs 
+https://developers.cloudflare.com/r2/api/s3/api/
+
+AWS Docs 
+https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/index.html
+
+## Disclaimer
+- Missing a deleteObjects implementation, only have a delete single object
+- Missing a buckets implemntation
+- Missing a abstraction layer for a object service and bucket service to work with the facade
 
 ### Installation
 
