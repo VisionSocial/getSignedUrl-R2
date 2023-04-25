@@ -40,6 +40,58 @@ export default class FileController extends BaseController {
     }
   }
 
+  public async copy(from: string) {
+    const copy: any = await this.S3.copyObject({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+      from,
+    });
+    if (!copy.error) {
+      return this.makeResponse(
+        {
+          copy: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: copy.error || "",
+        },
+        500
+      );
+    }
+  }
+
+  public async list() {
+    if (!this.fileData.bucket)
+      return this.makeResponse(
+        {
+          error: "Bucket is required",
+        },
+        500
+      );
+
+    const list: any = await this.S3.listObject({
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!list.error) {
+      return this.makeResponse(
+        list,
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: list.error || "",
+        },
+        500
+      );
+    }
+  }
+
   public async delete() {
     const deleted: any = await this.S3.deleteObject({
       filename: this.fileData.filename,

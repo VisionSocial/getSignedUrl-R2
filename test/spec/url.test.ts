@@ -5,7 +5,7 @@ import axios from 'axios'
 import fs from 'fs'
 import {v4} from "uuid";
 //mport path from 'path'
-import {authToken} from '../../src/config/config'
+import {AUTH_TOKEN} from '../../src/config/config'
 
 const api = supertest(app);
 const filename:string = `${v4()}.png`
@@ -22,7 +22,7 @@ describe('signed url', () => {
             filename: filename,
             bucket: bucket
         })
-        .set({ Authorization: authToken }).send();
+        .set({ Authorization: AUTH_TOKEN }).send();
         if(resp.body.url){
             url = resp.body.url
         }
@@ -52,7 +52,7 @@ describe('signed url', () => {
             from: bucket + '/testfolder/' + filename,
             bucket: bucket
         })
-        .set({ Authorization: authToken }).send();
+        .set({ Authorization: AUTH_TOKEN }).send();
         expect(resp.body).toHaveProperty("name");
     })
 
@@ -63,7 +63,7 @@ describe('signed url', () => {
             filename: filename,
             bucket: bucket
         })
-        .set({ Authorization: authToken }).send();
+        .set({ Authorization: AUTH_TOKEN }).send();
         expect(resp.body).toHaveProperty("name");
     })
 
@@ -73,7 +73,7 @@ describe('signed url', () => {
             folder: 'testfolder',
             bucket: bucket
         })
-        .set({ Authorization: authToken }).send();
+        .set({ Authorization: AUTH_TOKEN }).send();
         expect(resp.body).toHaveProperty("files");
         const content = resp.body.files || []
         expect(content.length).toBeGreaterThan(0)
@@ -85,7 +85,7 @@ describe('signed url', () => {
             folder: 'testfolder',
             bucket: bucket
         })
-        .set({ Authorization: authToken }).send();
+        .set({ Authorization: AUTH_TOKEN }).send();
         expect(resp.body).toHaveProperty("files");
         const deleted = resp.body.files || []
         expect(deleted.length).toBeGreaterThan(0)

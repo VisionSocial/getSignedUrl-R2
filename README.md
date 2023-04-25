@@ -5,6 +5,7 @@ The purpose of this email service is to have a service for creating signed url t
 ### Installation
 
 First, create your .env and edit as you need
+
 ```
 cp .env.dummy .env
 ```
@@ -12,6 +13,7 @@ cp .env.dummy .env
 ### Initialize
 
 Run this command
+
 ```
 npm install && npm update
 ```
@@ -19,6 +21,7 @@ npm install && npm update
 ### Running
 
 If you want to run this project for making some manual testing or for modifying the code
+
 ```
 npm run dev
 ```
