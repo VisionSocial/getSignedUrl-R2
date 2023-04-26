@@ -6,6 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  NODE_ENV: ${{ variables.NODE_ENV }}
+  PORT: ${{ variables.PORT  }}
+  ENDPOINT: ${{ secrets.ENDPOINT }}
+  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+  ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+  SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+  DEFAULT_BUCKET: ${{ variables.DEFAULT_BUCKET }}
+  REGION: ${{ variables.REGION }}
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+  ERROR_MANAGEMENT: ${{ variables.ERROR_MANAGEMENT }}
+
 jobs:
   build:
 
