@@ -2,12 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "lib": [
-      "dom",
-      "es6",
-      "es2017",
-      "esnext.asynciterable"
-    ],
+    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
     "sourceMap": true,
     "outDir": "./dist",
     "moduleResolution": "node",
@@ -26,18 +21,10 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "exclude": [
-    "node_modules",
-    "test/controller/*.ts",
-    "test/spec/**/*.test.ts"
-  ],
-  "typeRoots": [
-    "./typing-stubs",
-    "./custom_typings",
-    "./node_modules/@types"
-  ],
+  "exclude": ["node_modules", "test/controller/*.ts", "test/spec/**/*.test.ts"],
+  "typeRoots": ["./typing-stubs", "./custom_typings", "./node_modules/@types"],
   "typedocOptions": {
     "entryPoints": ["src"],
     "out": "docs"
