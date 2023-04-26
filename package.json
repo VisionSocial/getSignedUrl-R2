@@ -5,9 +5,6 @@
     "private": true,
     "license": "private",
     "main": "index.js",
-    "engines": {
-        "node": "18.x"
-      },
     "scripts": {
         "dev": "ts-node-dev --files --respawn --pretty --debug --transpile-only src/index.ts",
         "watch": "tsc -w",
