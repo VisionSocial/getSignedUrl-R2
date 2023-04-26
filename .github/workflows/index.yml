@@ -1,0 +1,38 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_ENV: test
+  PORT: 8080
+  ENDPOINT: ${{ secrets.ENDPOINT }}
+  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+  ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+  SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+  DEFAULT_BUCKET: ${{ secrets.DEFAULT_BUCKET }}
+  REGION: auto
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+  ERROR_MANAGEMENT: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Run tests
+        run: npm run test
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]

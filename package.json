@@ -1,7 +1,9 @@
 {
-    "name": "do-signed-url",
+    "name": "r2-signed-url",
     "version": "1.0.0",
-    "description": "get signed url to upload temp files on aws spaces",
+    "description": "get signed url to upload temp files on aws s3",
+    "private": true,
+    "license": "private",
     "main": "index.js",
     "scripts": {
         "dev": "ts-node-dev --files --respawn --pretty --debug --transpile-only src/index.ts",
@@ -14,10 +16,10 @@
         "test": "jest",
         "docs": "npx typedoc"
     },
-    "author": "Erik Viveros forked from Cairo G. Resendiz",
-    "license": "ISC",
+    "author": "TheMrP forked from Erik Viveros forked from Cairo G. Resendiz",
     "dependencies": {
-        "aws-sdk": "^2.973.0",
+        "@aws-sdk/client-s3": "^3.315.0",
+        "@aws-sdk/s3-request-presigner": "^3.315.0",
         "bluebird": "^3.7.2",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
@@ -38,7 +40,7 @@
         "@types/helmet": "^4.0.0",
         "@types/jest": "^27.4.1",
         "@types/joi": "^17.2.3",
-        "@types/node": "^17.0.21",
+        "@types/node": "^17.0.45",
         "@types/supertest": "^2.0.12",
         "@types/uuid": "^8.3.4",
         "axios": "^0.26.1",
@@ -83,6 +85,5 @@
             "\\.(css|less)$": "<rootDir>/__mocks__/mocks.js"
         },
         "testEnvironment": "node"
-    },
-    "private": true
+    }
 }

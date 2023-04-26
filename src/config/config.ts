@@ -1,31 +1,27 @@
-import * as dotenv from 'dotenv'
+import * as dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
-interface AmazonCredentials {
-    client_id: string,
-    client_secret: string,
-    region: string
-}
+export const ENVIROMENT: string = process.env.NODE_ENV
+  ? (process.env.NODE_ENV as string)
+  : "development";
 
-/**
-* App environment Variables
-*/
+export const APP_IN_PRODUCTION: boolean = ENVIROMENT === "production";
 
-export const environment: string = process.env.NODE_ENV ? process.env.NODE_ENV as string : "development"
+export const PORT: number = parseInt(process.env.PORT as string, 10);
 
-export const __prod__: boolean = environment === "production"
+export const ACCOUNT_ID: string = process.env.ACCOUNT_ID || "";
+export const ENDPOINT: string = process.env.ENDPOINT || "";
+export const ACCESS_KEY: string = process.env.ACCESS_KEY_ID || "";
+export const SECRET_KEY: string = process.env.SECRET_ACCESS_KEY || "";
+export const REGION: string = process.env.REGION || "us-east-1";
 
-export const PORT: number = __prod__ ? parseInt(process.env.PORT as string, 10) : 8080
+export const DEFAULT_BUCKET: string = process.env.DEFAULT_BUCKET
+  ? (process.env.DEFAULT_BUCKET as string)
+  : "";
 
-export const AWSCredentials: AmazonCredentials = {
-    client_id: process.env.AWS_ACCESS_KEY_ID ? process.env.AWS_ACCESS_KEY_ID as string : '',
-    client_secret: process.env.AWS_SECRET_ACCESS_KEY ? process.env.AWS_SECRET_ACCESS_KEY as string : '',
-    region: process.env.AWS_REGION ? process.env.AWS_REGION as string : ''
-};
+export const AUTH_TOKEN: string = process.env.AUTH_TOKEN
+  ? (process.env.AUTH_TOKEN as string)
+  : "";
 
-export const bucketDefault: string = process.env.BUCKET_DEFAULT ? process.env.BUCKET_DEFAULT as string : '';
-
-export const authToken: string = process.env.AUTH_TOKEN ? process.env.AUTH_TOKEN as string : '';
-
-export const errorManagement: boolean = process.env.ERROR_MANAGEMENT === 'true' ? true : false
+export const ERROR_MANAGEMENT: boolean = process.env.ERROR_MANAGEMENT === "true";

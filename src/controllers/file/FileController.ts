@@ -1,105 +1,142 @@
-import {S3} from 'aws-sdk';
-import {IFileClass, emptyPromiseResponse, stringPromiseResponse, IFileData } from '../../interfaces/IFile';
-import {IS3Response, IAmazonClass, IS3KeyObject} from '../../interfaces/IAmazon'
-import Amazon from '../../classes/amazon';
-import BaseController from '../BaseController'
-import {bucketDefault} from '../../config/config';
-import Bluebird from "bluebird"
+import BaseController from "../BaseController";
+import { IFileData } from "../../interfaces/IFile";
+import S3Facade from "../../classes/S3Facade";
+import { IS3Facade } from "src/interfaces/IS3Facade";
 
-export default class FileController extends BaseController implements IFileClass{
-	mimetype: string;
-    fileData: IFileData;
-    aws: IAmazonClass;
+export default class FileController extends BaseController {
+  fileData: IFileData;
+  mimetype: string = "text/plain";
+  private S3: IS3Facade;
 
-	constructor (fileData: IFileData, mimetype: string = "text/plain") {
-		super()
-        this.mimetype = mimetype;
-        this.fileData = fileData;
-        this.aws = new Amazon(fileData.bucket || bucketDefault, {signatureVersion: 'v4'});
-	}
+  constructor(fileData: IFileData, mimetype: string = "text/plain") {
+    super();
+    this.mimetype = mimetype;
+    this.fileData = fileData;
+    this.S3 = S3Facade.getInstance();
+  }
 
-    public signed: emptyPromiseResponse = async () => {
-        const signedUrl: IS3Response = await this.aws.getUrl(this.mimetype, this.fileData);
-        if(signedUrl.status){
-            return this.makeResponse({
-                url: signedUrl.url || "", 
-                name: signedUrl.nameFile || ""
-            }, 200);
-        }
-        else{
-            return this.makeResponse({
-                error: signedUrl.error || ""
-            }, 500);
-        }
-        
+  public async signed() {
+    const signedUrl: any = await this.S3.preSignURL({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      operation: "WRITE",
+      bucket: this.fileData.bucket,
+    });
+    if (!signedUrl.error) {
+      return this.makeResponse(
+        {
+          url: signedUrl.url || "",
+          expires: signedUrl.expires || "",
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: signedUrl.error || "",
+        },
+        500
+      );
     }
+  }
 
-    public delete: emptyPromiseResponse = async () => {
-        const deletedFile: IS3Response = await this.aws.deleteFile(this.fileData);
-        if(deletedFile.status){
-            return this.makeResponse({
-                name: deletedFile.nameFile || ""
-            }, 200);
-        }
-        else{
-            return this.makeResponse({
-                error: deletedFile.error || ""
-            }, 500);
-        }
-        
+  public async copy(from: string) {
+    const copy: any = await this.S3.copyObject({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+      from,
+    });
+    if (!copy.error) {
+      return this.makeResponse(
+        {
+          copied: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: copy.error || "",
+        },
+        500
+      );
     }
+  }
 
-    public copy: stringPromiseResponse = async (from: string) => {
-        const copiedfile: IS3Response = await this.aws.copyObject(from, this.fileData);
-        if(copiedfile.status){
-            return this.makeResponse({
-                name: copiedfile.nameFile || ""
-            }, 200);
-        }
-        else{
-            return this.makeResponse({
-                error: copiedfile.error || ""
-            }, 500);
-        }
+  public async list() {
+    if (!this.fileData.bucket)
+      return this.makeResponse(
+        {
+          error: "Bucket is required",
+        },
+        500
+      );
+
+    const list: any = await this.S3.listObject({
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!list.error) {
+      return this.makeResponse(list, 200);
+    } else {
+      return this.makeResponse(
+        {
+          error: list.error || "",
+        },
+        500
+      );
     }
+  }
 
-    public list: emptyPromiseResponse = async () => {
-        const listedFiles: IS3Response = await this.aws.listObjects(this.fileData);
-        if(listedFiles.status){
-            return this.makeResponse({
-                files: listedFiles.content || []
-            }, 200);
-        }
-        else{
-            return this.makeResponse({
-                error: listedFiles.error || ""
-            }, 500);
-        }
+  public async delete() {
+    const deleted: any = await this.S3.deleteObject({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!deleted.error) {
+      return this.makeResponse(
+        {
+          deleted: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: deleted.error || "",
+        },
+        500
+      );
     }
+  }
 
-    public deleteAll: emptyPromiseResponse = async () => {
-        const listedFiles: IS3Response = await this.aws.listObjects(this.fileData);
-        if(listedFiles.status){
-            const files: S3.ObjectList = listedFiles.content || []
-            const filesToDelete: Array<IS3KeyObject> = await Bluebird.map(files, (el) => {
-                return {Key: el.Key || ""}
-            })
-            const deletedFiles: IS3Response = await this.aws.deleteObjects(filesToDelete)
-            
-            if(deletedFiles.status){
-                return this.makeResponse({
-                    files: deletedFiles.deleted || []
-                }, 200);
-            }
-            return this.makeResponse({
-                error: deletedFiles.error || ""
-            }, 500);
-        }
-        else{
-            return this.makeResponse({
-                error: listedFiles.error || ""
-            }, 500);
-        }
+  /**
+   * Missing implementation
+   * https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/deleteobjectscommand.html
+   * @returns
+   */
+  public async deleteAll() {
+    const deleted: any = await this.S3.deleteObject({
+      filename: this.fileData.filename,
+      path: this.fileData.folder,
+      bucket: this.fileData.bucket,
+    });
+    if (!deleted.error) {
+      return this.makeResponse(
+        {
+          deleted: true,
+        },
+        200
+      );
+    } else {
+      return this.makeResponse(
+        {
+          error: deleted.error || "",
+        },
+        500
+      );
     }
-
+  }
 }

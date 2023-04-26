@@ -1,33 +1,38 @@
 # S3 Signed Url Service
 
-The purpose of this email service is to have a service for creating signed url to Amazon S3 service
+The purpose of this service is to have an interface for creating signed url to Amazon S3
+
+R2 Docs 
+https://developers.cloudflare.com/r2/api/s3/api/
+
+AWS Docs 
+https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/index.html
+
+## Disclaimer
+- Missing a deleteObjects implementation, only have a delete single object
+- Missing a buckets implemntation
+- Missing a abstraction layer for a object service and bucket service to work with the facade
 
 ### Installation
 
-First, you need to clone this repo
+First, create your .env and edit as you need
 
 ```
-git clone https://github.com/erikfer94/getSignedUrl-DO.git <folder>
+cp .env.dummy .env
 ```
-
-Once this repo is cloned, enter to the new folder and make a copy of `.env.dummy` called `.env`
-```
-cp .env.test .env
-```
-
-Set your own environment values on this env file.
-
 
 ### Initialize
 
 Run this command
+
 ```
-npm install
+npm install && npm update
 ```
 
 ### Running
 
 If you want to run this project for making some manual testing or for modifying the code
+
 ```
 npm run dev
 ```
